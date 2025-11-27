@@ -89,9 +89,21 @@ class AbinitBaseWorkChain(BaseRestartWorkChain):
         the case of the latter, the `KpointsData` will be constructed for the input `StructureData` using the
         `create_kpoints_from_distance` calculation function.
         """
+        found = False
+        found_both = False
         for key in ['kpoints', 'kpoints_distance']:
             if key in self.inputs:
-                return self.exit_codes.ERROR_INVALID_INPUT_KPOINTS # pylint: disable=no-member
+                if found:
+                    found_both = True
+                found = True
+
+        if not found:
+            self.report('Neither the `kpoints` nor the `kpoints_distance` input was specified.')
+            return self.exit_codes.ERROR_INVALID_INPUT_KPOINTS # pylint: disable=no-member
+
+        if found_both:
+            self.report('Both the `kpoints` and the `kpoints_distance` input were specified, specify only one.')
+            return self.exit_codes.ERROR_INVALID_INPUT_KPOINTS # pylint: disable=no-member
 
         try:
             kpoints = self.inputs.kpoints

@@ -191,8 +191,11 @@ class AbinitCalculation(CalcJob):
         pmg_structure = structure.get_pymatgen()
         abi_structure = AbiStructure.as_structure(pmg_structure)
         # NOTE: need to refine the `abi_sanitize` parameters
-        abi_structure = abi_structure.abi_sanitize(symprec=1e-3, angle_tolerance=5,
-            primitive=True, primitive_standard=False)
+        # Skipping: we do not want to change, at the plugin level, the structure
+        # This should be done by the user (or by the workflow) before giving it
+        # to us
+        #abi_structure = abi_structure.abi_sanitize(symprec=1e-3, angle_tolerance=5,
+        #    primitive=False, primitive_standard=False)
 
         for kind in structure.get_kind_names():
             pseudo = pseudos[kind]
